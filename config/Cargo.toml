@@ -1,0 +1,8 @@
+[package]
+name = "hms-config"
+version = { workspace = true }
+edition = { workspace = true }
+
+[dependencies]
+serde = { workspace = true }
+serde_derive = { workspace = true }

@@ -1,0 +1,7 @@
+[package]
+name = "hms-cli"
+version = { workspace = true }
+edition = { workspace = true }
+
+[dependencies]
+hms-config = { workspace = true }

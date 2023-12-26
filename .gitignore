@@ -1,0 +1,9 @@
+/target/
+
+**/*.rs.bk
+.cargo
+
+# intellij files
+.idea/
+
+.DS_Store
