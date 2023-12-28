@@ -1,8 +1,17 @@
 [package]
+edition.workspace = true
 name = "hms-config"
-version = { workspace = true }
-edition = { workspace = true }
+version.workspace = true
 
 [dependencies]
-serde = { workspace = true }
-serde_derive = { workspace = true }
+dialoguer.workspace = true
+serde.workspace = true
+serde_derive.workspace = true
+thiserror.workspace = true
+toml.workspace = true
+
+# Internal
+hms-common.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

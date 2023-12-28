@@ -1,8 +1,7 @@
 [package]
 edition.workspace = true
-name = "hms-cli"
+name = "hms-common"
 version.workspace = true
 
 [dependencies]
-# Internal
-hms-config.workspace = true
+dirs.workspace = true

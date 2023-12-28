@@ -1,15 +1,20 @@
 [workspace]
+members = ["cli", "common", "config"]
 resolver = "2"
-members = [
-    "cli",
-    "config",
-]
 
 [workspace.package]
-version = "0.1.0"
 edition = "2021"
+version = "0.1.0"
 
 [workspace.dependencies]
+dialoguer = "0.11.0"
+dirs = "5.0.1"
+mockall = "0.12.1"
 serde = "1.0.193"
 serde_derive = "1.0.193"
+tempfile = "3.8.1"
+thiserror = "1.0.52"
+toml = "0.8.8"
+
+hms-common = { path = "common" }
 hms-config = { path = "config" }
