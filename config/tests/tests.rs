@@ -1,28 +1,10 @@
-use hms_common::app_dir_client::AppDirClient;
 use hms_config::{error::HmsConfigError, HmsConfig};
-use std::{io::Error, path::PathBuf};
-use tempfile::TempDir;
-
-struct MockAppDirClient {
-    pub mock_path: PathBuf,
-}
-
-impl AppDirClient for MockAppDirClient {
-    fn get_app_dir_path(&self) -> Result<PathBuf, Error> {
-        Ok(self.mock_path.clone())
-    }
-}
-
-fn setup_mock_client() -> (TempDir, MockAppDirClient) {
-    let temp_dir = tempfile::tempdir().unwrap();
-    let mock_path = temp_dir.path().to_owned();
-    let mock_client = MockAppDirClient { mock_path };
-    (temp_dir, mock_client)
-}
+use hms_test_utils::{mock_app_dir_client, MockAppDirClient};
+use std::path::PathBuf;
 
 #[test]
 fn test_save_exists() {
-    let (_temp_dir, mock_client) = setup_mock_client();
+    let (_temp_dir, mock_client) = mock_app_dir_client();
     let config = HmsConfig::default();
 
     assert!(!HmsConfig::exists(&mock_client).unwrap());
@@ -32,7 +14,7 @@ fn test_save_exists() {
 
 #[test]
 fn test_save_load() {
-    let (_temp_dir, mock_client) = setup_mock_client();
+    let (_temp_dir, mock_client) = mock_app_dir_client();
     let config = HmsConfig::default();
 
     config.save(&mock_client).unwrap();
@@ -41,7 +23,7 @@ fn test_save_load() {
 
 #[test]
 fn test_update_snip_limit() {
-    let (_temp_dir, mock_client) = setup_mock_client();
+    let (_temp_dir, mock_client) = mock_app_dir_client();
     let config = HmsConfig::default();
 
     config.update_snip_limit(&mock_client, 20).unwrap();

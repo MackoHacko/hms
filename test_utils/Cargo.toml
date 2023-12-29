@@ -1,0 +1,8 @@
+[package]
+edition.workspace = true
+name = "hms-test_utils"
+version.workspace = true
+
+[dependencies]
+hms-common.workspace = true
+tempfile.workspace = true
