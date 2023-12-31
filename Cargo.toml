@@ -16,9 +16,7 @@ diesel = { version = "2.1.4", features = [
 ] }
 diesel_migrations = "2.1.0"
 dirs = "5.0.1"
-mockall = "0.12.1"
-serde = "1.0.193"
-serde_derive = "1.0.193"
+serde = { version = "1.0.193", features = ["derive"] }
 tempfile = "3.8.1"
 test-case = "3.3.1"
 thiserror = "1.0.52"

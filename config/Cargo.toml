@@ -6,7 +6,6 @@ version.workspace = true
 [dependencies]
 dialoguer.workspace = true
 serde.workspace = true
-serde_derive.workspace = true
 thiserror.workspace = true
 toml.workspace = true
 

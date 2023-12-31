@@ -7,8 +7,6 @@ version.workspace = true
 chrono.workspace = true
 diesel.workspace = true
 diesel_migrations.workspace = true
-serde.workspace = true
-serde_derive.workspace = true
 thiserror.workspace = true
 
 # Internal

@@ -1,10 +1,10 @@
 use hms_db::{error::HmsDbError, manager::HmsDbManager, models::NewSnip};
-use hms_test_utils::{mock_app_dir_client, MockAppDirClient};
+use hms_test_utils::{test_app_dir_client, TestAppDirClient};
 use tempfile::TempDir;
 use test_case::test_case;
 
-pub fn get_test_manager() -> (TempDir, HmsDbManager<MockAppDirClient>) {
-    let (temp_dir, mock_client) = mock_app_dir_client();
+pub fn get_test_manager() -> (TempDir, HmsDbManager<TestAppDirClient>) {
+    let (temp_dir, mock_client) = test_app_dir_client();
     let manager = HmsDbManager::new(mock_client);
     manager.run_pending_migrations().unwrap();
     (temp_dir, manager)
