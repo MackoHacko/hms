@@ -51,6 +51,12 @@ where
     }
 
     pub fn wizard(&self) -> Result<HmsConfig> {
+        if self.config_exists()? {
+            let existing_cfg = self.load_config()?;
+            if Self::ask_use_existing(&existing_cfg)? {
+                return Ok(existing_cfg);
+            }
+        }
         match Self::ask_default()? {
             true => Ok(HmsConfig::default()),
             false => {
@@ -60,9 +66,16 @@ where
         }
     }
 
+    fn ask_use_existing(cfg: &HmsConfig) -> Result<bool> {
+        Confirm::with_theme(&ColorfulTheme::default())
+            .with_prompt(format!("Use existing config?\n{}", cfg))
+            .interact()
+            .map_err(Into::into)
+    }
+
     fn ask_default() -> Result<bool> {
         Confirm::with_theme(&ColorfulTheme::default())
-            .with_prompt(format!("Use default config? {}", HmsConfig::default()))
+            .with_prompt(format!("Use default config?\n{}", HmsConfig::default()))
             .interact()
             .map_err(Into::into)
     }
