@@ -6,18 +6,18 @@ use models::HmsConfig;
 use prelude::*;
 use std::fs;
 
-pub struct HmsConfigManager<P>
+pub struct HmsConfigManager<'a, P>
 where
     P: AppDirClient,
 {
-    pub app_dir_client: P,
+    pub app_dir_client: &'a P,
 }
 
-impl<P> HmsConfigManager<P>
+impl<'a, P> HmsConfigManager<'a, P>
 where
     P: AppDirClient,
 {
-    pub fn new(app_dir_client: P) -> HmsConfigManager<P> {
+    pub fn new(app_dir_client: &'a P) -> HmsConfigManager<P> {
         HmsConfigManager { app_dir_client }
     }
 
@@ -50,7 +50,7 @@ where
         self.save_config(&updated)
     }
 
-    pub fn wizard() -> Result<HmsConfig> {
+    pub fn wizard(&self) -> Result<HmsConfig> {
         match Self::ask_default()? {
             true => Ok(HmsConfig::default()),
             false => {

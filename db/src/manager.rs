@@ -5,18 +5,18 @@ use hms_common::app_dir_client::AppDirClient;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
-pub struct HmsDbManager<P>
+pub struct HmsDbManager<'a, P>
 where
     P: AppDirClient,
 {
-    pub app_dir_client: P,
+    pub app_dir_client: &'a P,
 }
 
-impl<P> HmsDbManager<P>
+impl<'a, P> HmsDbManager<'a, P>
 where
     P: AppDirClient,
 {
-    pub fn new(app_dir_client: P) -> HmsDbManager<P> {
+    pub fn new(app_dir_client: &'a P) -> HmsDbManager<P> {
         HmsDbManager { app_dir_client }
     }
 

@@ -1,18 +1,17 @@
 use hms_db::{error::HmsDbError, manager::HmsDbManager, models::NewSnip};
 use hms_test_utils::{test_app_dir_client, TestAppDirClient};
-use tempfile::TempDir;
 use test_case::test_case;
 
-pub fn get_test_manager() -> (TempDir, HmsDbManager<TestAppDirClient>) {
-    let (temp_dir, mock_client) = test_app_dir_client();
-    let manager = HmsDbManager::new(mock_client);
+pub fn get_test_manager(app_dir_client: &TestAppDirClient) -> HmsDbManager<TestAppDirClient> {
+    let manager = HmsDbManager::new(app_dir_client);
     manager.run_pending_migrations().unwrap();
-    (temp_dir, manager)
+    manager
 }
 
 #[test]
 fn test_insert_snip() {
-    let (_temp_dir, manager) = get_test_manager();
+    let (_temp_dir, app_dir_client) = test_app_dir_client();
+    let manager = get_test_manager(&app_dir_client);
     let new_snip = NewSnip::new("alias", "value");
 
     let snip = manager.with_db(|db| db.insert_snip(&new_snip)).unwrap();
@@ -27,7 +26,8 @@ fn test_insert_snip() {
 #[test_case("schwifty")]
 fn test_case_insensitive_alias_sub_string_search(sub_string: &str) {
     let alias = "A Pickle Portal with Schwifty Casing";
-    let (_temp_dir, manager) = get_test_manager();
+    let (_temp_dir, app_dir_client) = test_app_dir_client();
+    let manager = get_test_manager(&app_dir_client);
     let new_snip = NewSnip::new(alias, "value");
 
     let id = manager.with_db(|db| db.insert_snip(&new_snip)).unwrap().id;
@@ -41,7 +41,8 @@ fn test_case_insensitive_alias_sub_string_search(sub_string: &str) {
 
 #[test]
 fn test_alias_length_constraint() {
-    let (_temp_dir, manager) = get_test_manager();
+    let (_temp_dir, app_dir_client) = test_app_dir_client();
+    let manager = get_test_manager(&app_dir_client);
     let alias = "ExtremelyLongAndUnnecessarilyComplicatedAliasNameThatDefiesAllLogic";
     let new_snip = NewSnip::new(alias, "value");
 
@@ -56,7 +57,8 @@ fn test_alias_length_constraint() {
 
 #[test]
 fn test_rollback_on_query_error() {
-    let (_temp_dir, manager) = get_test_manager();
+    let (_temp_dir, app_dir_client) = test_app_dir_client();
+    let manager = get_test_manager(&app_dir_client);
     let new_snip = NewSnip::new("alias", "value");
 
     let result = manager.with_db(|db| {
