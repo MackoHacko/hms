@@ -3,7 +3,7 @@ use std::fmt;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct HmsConfig {
-    pub snip_limit: usize,
+    pub snip_limit: i64,
 }
 
 impl HmsConfig {

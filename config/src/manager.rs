@@ -44,7 +44,7 @@ where
         Ok(())
     }
 
-    pub fn update_snip_limit(&self, snip_limit: usize) -> Result<()> {
+    pub fn update_snip_limit(&self, snip_limit: i64) -> Result<()> {
         let mut updated = self.load_config()?;
         updated.snip_limit = snip_limit;
         self.save_config(&updated)
@@ -80,7 +80,7 @@ where
             .map_err(Into::into)
     }
 
-    fn ask_snip_limit() -> Result<usize> {
+    fn ask_snip_limit() -> Result<i64> {
         Input::with_theme(&ColorfulTheme::default())
             .with_prompt("Snip limit?")
             .default(HmsConfig::default().snip_limit)
