@@ -1,8 +1,16 @@
 [package]
+description = "Hold my Snip!\nA command line utility to hold all your snippets"
 edition.workspace = true
-name = "hms-cli"
+name = "hms"
 version.workspace = true
 
 [dependencies]
+clap.workspace = true
+dialoguer.workspace = true
+ratatui.workspace = true
+thiserror.workspace = true
+
 # Internal
+hms-common.workspace = true
 hms-config.workspace = true
+hms-db.workspace = true
