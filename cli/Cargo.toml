@@ -5,7 +5,11 @@ name = "hms"
 version.workspace = true
 
 [dependencies]
+anyhow.workspace = true
+better-panic.workspace = true
 clap.workspace = true
+cli-clipboard.workspace = true
+crossterm.workspace = true
 dialoguer.workspace = true
 ratatui.workspace = true
 thiserror.workspace = true

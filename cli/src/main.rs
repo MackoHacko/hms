@@ -1,30 +1,23 @@
+#![allow(unused)]
+
+use anyhow::{Ok, Result};
 use app::HmsApp;
+use gui::Gui;
 use hms_common::app_dir_client::DefaultAppDirClient;
-use prelude::*;
+use hms_config::manager::HmsConfigManager;
+use hms_db::{manager::HmsDbManager, models::NewSnip};
 
 mod app;
 mod commands;
-mod errors;
-mod prelude;
+mod gui;
 
 fn main() -> Result<()> {
-    let app = HmsApp::new(&DefaultAppDirClient);
-    app.run().map_err(|err| match err {
-        HmsError::IO(e) => {
-            eprintln!("IO error occurred: {}", e);
-            std::process::exit(1);
-        }
-        HmsError::ConfigError(e) => {
-            eprintln!("Configuration error: {}", e);
-            std::process::exit(1);
-        }
-        HmsError::DbError(e) => {
-            eprintln!("Database error: {}", e);
-            std::process::exit(1);
-        }
-        HmsError::NotInitialized => {
-            eprintln!("Application is not initialized. Please run the init command first.");
-            std::process::exit(1);
-        }
-    })
+    let app_dir_client = DefaultAppDirClient;
+    let cfg_manager = HmsConfigManager::new(&app_dir_client);
+    let cfg = cfg_manager.load_config()?;
+    let db_manager = HmsDbManager::new(&app_dir_client);
+    let app = HmsApp::new(&app_dir_client);
+    //app.run()
+
+    Gui::run(cfg, db_manager)
 }

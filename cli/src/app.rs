@@ -1,11 +1,9 @@
-use crate::{
-    commands::{
-        add::{add_cmd, ADD_CMD_ALIAS_ARG_ID, ADD_CMD_ID, ADD_CMD_SNIP_ARG_ID},
-        init::{init_cmd, INIT_CMD_ID},
-        main::main_cmd,
-    },
-    prelude::*,
+use crate::commands::{
+    add::{add_cmd, ADD_CMD_ALIAS_ARG_ID, ADD_CMD_ID, ADD_CMD_SNIP_ARG_ID},
+    init::{init_cmd, INIT_CMD_ID},
+    main::main_cmd,
 };
+use anyhow::{bail, Context, Result};
 use clap::ArgMatches;
 use hms_common::app_dir_client::AppDirClient;
 use hms_config::manager::HmsConfigManager;
@@ -75,7 +73,10 @@ where
 
     fn handle_add_cmd(&self, args: &ArgMatches) -> Result<()> {
         if self.needs_initialization()? {
-            return Err(HmsError::NotInitialized);
+            bail!(
+                "hms does not seem to be initialized properly, did you forget to run `{}`?",
+                INIT_CMD_ID
+            )
         }
 
         let alias: &String = args

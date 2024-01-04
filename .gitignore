@@ -3,7 +3,8 @@
 **/*.rs.bk
 .cargo
 
-# intellij files
+# ide files
 .idea/
+.vscode/
 
 .DS_Store
