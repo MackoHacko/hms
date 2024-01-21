@@ -1,0 +1,16 @@
+[package]
+name = "app"
+authors.workspace = true
+edition.workspace = true
+version.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+better-panic.workspace = true
+ratatui.workspace = true
+crossterm.workspace = true
+
+# Internal
+hms-common.workspace = true
+hms-config.workspace = true
+hms-db.workspace = true

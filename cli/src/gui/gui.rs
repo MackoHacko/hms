@@ -152,7 +152,7 @@ impl Gui {
         db_manager: &HmsDbManager<T>,
     ) -> Result<Vec<Snip>> {
         db_manager
-            .with_db(|db| db.find_snip_by_alias(&state.query, config.snip_limit))
+            .with_db(|db| db.find_snips_by_alias(&state.query, config.snip_limit, 0))
             .context("db.find_snip_by_alias")
     }
 }

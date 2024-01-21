@@ -32,7 +32,7 @@ fn test_case_insensitive_alias_sub_string_search(sub_string: &str) {
 
     let id = manager.with_db(|db| db.insert_snip(&new_snip)).unwrap().id;
     let snips = &manager
-        .with_db(|db| db.find_snip_by_alias(sub_string, 10))
+        .with_db(|db| db.find_snips_by_alias(sub_string, 10, 0))
         .unwrap();
 
     assert_eq!(1, snips.len());
@@ -73,7 +73,7 @@ fn test_rollback_on_query_error() {
     }
 
     let existing = manager
-        .with_db(|db| db.find_snip_by_alias("alias", 10))
+        .with_db(|db| db.find_snips_by_alias("alias", 10, 0))
         .unwrap();
 
     assert!(existing.is_empty(), "Rollback did not occur as expected");

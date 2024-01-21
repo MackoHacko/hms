@@ -25,10 +25,16 @@ impl<'a> HmsDb<'a> {
             .map_err(From::from)
     }
 
-    pub fn find_snip_by_alias(&mut self, snip_alias: &str, limit: i64) -> Result<Vec<Snip>> {
+    pub fn find_snips_by_alias(
+        &mut self,
+        snip_alias: &str,
+        limit: i64,
+        offset: i64,
+    ) -> Result<Vec<Snip>> {
         snips
             .filter(alias.like(format!("%{}%", snip_alias)))
             .limit(limit)
+            .offset(offset)
             .load::<Snip>(self.conn)
             .map_err(From::from)
     }

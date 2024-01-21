@@ -5,6 +5,7 @@ use hms_common::app_dir_client::AppDirClient;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
+#[derive(Debug)]
 pub struct HmsDbManager<'a, P>
 where
     P: AppDirClient,

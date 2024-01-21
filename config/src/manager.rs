@@ -6,6 +6,7 @@ use models::HmsConfig;
 use prelude::*;
 use std::fs;
 
+#[derive(Debug)]
 pub struct HmsConfigManager<'a, P>
 where
     P: AppDirClient,
