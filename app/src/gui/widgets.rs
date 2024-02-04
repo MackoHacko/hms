@@ -1,3 +1,4 @@
+mod search_bar;
 mod snip_list;
 mod snip_value;
 

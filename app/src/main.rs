@@ -1,5 +1,8 @@
 use anyhow::{Ok, Result};
-use gui::{displays::LargeDisplay, Gui};
+use gui::{
+    displays::{LargeDisplay, SmallDisplay},
+    Gui,
+};
 use hms_common::app_dir_client::DefaultAppDirClient;
 use hms_config::manager::HmsConfigManager;
 use hms_db::manager::HmsDbManager;
@@ -17,6 +20,6 @@ fn main() -> Result<()> {
     let cfg_manager = HmsConfigManager::new(&app_dir_client);
     let cfg = cfg_manager.load_config()?;
 
-    Gui::<LargeDisplay, DefaultAppDirClient>::run(&db_manager, cfg)?;
+    Gui::<SmallDisplay, DefaultAppDirClient>::run(&db_manager, cfg)?;
     Ok(())
 }

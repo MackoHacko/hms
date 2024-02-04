@@ -1,4 +1,6 @@
-mod large_display;
+mod large;
+mod small;
 mod utils;
 
-pub use large_display::*;
+pub use large::*;
+pub use small::*;

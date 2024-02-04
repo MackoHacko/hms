@@ -1,7 +1,11 @@
 use anyhow::{Context, Result};
 use crossterm::{
+    cursor::{self, MoveTo},
     event::{self, Event},
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    execute,
+    terminal::{
+        disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen, ScrollUp,
+    },
     ExecutableCommand,
 };
 use ratatui::prelude::*;
@@ -44,6 +48,21 @@ impl Term {
             return Ok(None);
         }
         Ok(Some(event::read()?))
+    }
+
+    pub fn cursor_position() -> Result<(u16, u16)> {
+        let pos = cursor::position().context("cursor position")?;
+        Ok(pos)
+    }
+
+    pub fn scroll_up(lines: u16) -> Result<()> {
+        execute!(stdout(), ScrollUp(lines)).context("scroll up")?;
+        Ok(())
+    }
+
+    pub fn move_cursor_vertically_to(y: u16) -> Result<()> {
+        execute!(stdout(), MoveTo(0, y)).context("move cursor vertically")?;
+        Ok(())
     }
 }
 

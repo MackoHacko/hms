@@ -71,6 +71,6 @@ where
     }
 
     fn clear(&mut self) -> Result<()> {
-        todo!()
+        Ok(())
     }
 }

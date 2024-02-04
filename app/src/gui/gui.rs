@@ -44,6 +44,7 @@ where
                 _ => {}
             };
         }
+        gui.display.clear()?;
         Term::stop()?;
         Ok(())
     }
