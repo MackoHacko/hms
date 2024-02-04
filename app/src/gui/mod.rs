@@ -6,3 +6,4 @@ mod traits;
 mod widgets;
 
 pub use gui::Gui;
+pub use traits::GuiDisplay;

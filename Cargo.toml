@@ -6,6 +6,7 @@ resolver = "2"
 authors = ["marcus.lindstrom1@gmail.com"]
 edition = "2021"
 version = "0.1.0"
+description = "Command line utility to help with storing text (eg. code snips)"
 
 [workspace.dependencies]
 anyhow = "1.0.79"

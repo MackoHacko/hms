@@ -110,6 +110,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "better-panic",
+ "clap",
  "crossterm",
  "hms-common",
  "hms-config",

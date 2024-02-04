@@ -3,10 +3,12 @@ name = "app"
 authors.workspace = true
 edition.workspace = true
 version.workspace = true
+description.workspace = true
 
 [dependencies]
 anyhow.workspace = true
 better-panic.workspace = true
+clap.workspace = true
 ratatui.workspace = true
 crossterm.workspace = true
 
