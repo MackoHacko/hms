@@ -74,7 +74,12 @@ where
     fn update(&mut self, state: &mut GuiState<P>) -> Result<()> {
         let logo = GradientText::new(LOGO, LOGO_GRADIENT_START, LOGO_GRADIENT_END);
         let snip_list = SnipList;
-        let snip_value = SnipValue::new(state.list_state.selected_snip_value());
+        let snip_value = SnipValue::new(
+            state
+                .list_state
+                .selected_snip_value()
+                .map_or(String::default(), |s| s),
+        );
         let search_bar =
             Paragraph::new(format!("Search: {}_", state.query())).block(Block::default());
         self.term.draw(|f| {

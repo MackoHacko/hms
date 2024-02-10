@@ -111,6 +111,7 @@ dependencies = [
  "anyhow",
  "better-panic",
  "clap",
+ "cli-clipboard",
  "crossterm",
  "hms-common",
  "hms-config",

@@ -49,9 +49,8 @@ impl SnipListState {
         self.snips.extend(snips);
     }
 
-    pub fn selected_snip_value(&mut self) -> String {
-        self.selected_snip()
-            .map_or(String::new(), |s| s.value.clone())
+    pub fn selected_snip_value(&mut self) -> Option<String> {
+        self.selected_snip().map(|s| s.value.clone())
     }
 
     pub fn needs_next_page(&mut self) -> bool {

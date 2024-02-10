@@ -85,6 +85,12 @@ where
             KeyCode::Backspace => {
                 self.gui_state.pop_query()?;
             }
+            KeyCode::Enter => {
+                if let Some(data) = self.gui_state.list_state.selected_snip_value() {
+                    let _ = cli_clipboard::set_contents(data);
+                }
+                self.should_quit = true;
+            }
             _ => {}
         }
         Ok(())

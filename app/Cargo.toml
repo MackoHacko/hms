@@ -9,6 +9,7 @@ description.workspace = true
 anyhow.workspace = true
 better-panic.workspace = true
 clap.workspace = true
+cli-clipboard.workspace = true
 ratatui.workspace = true
 crossterm.workspace = true
 
