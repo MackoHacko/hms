@@ -10,8 +10,9 @@ anyhow.workspace = true
 better-panic.workspace = true
 clap.workspace = true
 cli-clipboard.workspace = true
-ratatui.workspace = true
 crossterm.workspace = true
+human-panic.workspace = true
+ratatui.workspace = true
 
 # Internal
 hms-common.workspace = true

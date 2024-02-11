@@ -23,7 +23,8 @@ diesel = { version = "2.1.4", features = [
 ] }
 diesel_migrations = "2.1.0"
 dirs = "5.0.1"
-ratatui = "0.25.0"
+ratatui = "0.26.0"
+human-panic = "1.2.3"
 serde = { version = "1.0.193", features = ["derive"] }
 tempfile = "3.8.1"
 test-case = "3.3.1"
