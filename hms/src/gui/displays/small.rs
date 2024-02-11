@@ -3,13 +3,13 @@ use crate::gui::{
     gui_state::GuiState,
     term::Term,
     traits::GuiDisplay,
-    widgets::{SnipList, SnipValue},
+    widgets::{SearchBar, SnipList, SnipValue},
 };
 use anyhow::{Ok, Result};
 use hms_common::app_dir_client::AppDirClient;
 use ratatui::{
     layout::{Direction, Rect},
-    widgets::{Block, Clear, Paragraph, Widget},
+    widgets::{Clear, Widget},
 };
 
 #[derive(Debug)]
@@ -98,8 +98,7 @@ where
                 .selected_snip_value()
                 .map_or(String::default(), |s| s),
         );
-        let search_bar =
-            Paragraph::new(format!("Search: {}_", state.query())).block(Block::default());
+        let search_bar = SearchBar::new(state.query().clone());
         self.term.draw(|f| {
             f.render_stateful_widget(snip_list, self.layout.snip_list, &mut state.list_state);
             f.render_widget(snip_value, self.layout.snip_val);
