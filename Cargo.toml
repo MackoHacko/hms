@@ -1,5 +1,5 @@
 [workspace]
-members = ["app", "cli", "common", "config", "db", "test_utils"]
+members = ["common", "config", "db", "hms", "test_utils"]
 resolver = "2"
 
 [workspace.package]
