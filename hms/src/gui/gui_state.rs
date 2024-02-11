@@ -54,7 +54,8 @@ where
 
     pub fn paginate(&mut self) -> Result<()> {
         if self.list_state.needs_next_page() {
-            let next = self.get_snips(self.list_state.selected_snip_index() as i64)?;
+            let offset = self.list_state.selected_snip_index() + 1;
+            let next = self.get_snips(offset as i64)?;
             self.list_state.extend_snips(next);
         }
         Ok(())
