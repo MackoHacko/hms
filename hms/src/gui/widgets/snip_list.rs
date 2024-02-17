@@ -119,7 +119,7 @@ impl StatefulWidget for SnipList {
 
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
         let block = Block::default()
-            .borders(Borders::LEFT | Borders::BOTTOM)
+            .borders(Borders::ALL)
             .border_style(Style::new().dark_gray().dim())
             .border_type(ratatui::widgets::BorderType::Rounded);
 
