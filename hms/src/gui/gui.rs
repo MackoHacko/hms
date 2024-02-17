@@ -79,6 +79,11 @@ where
                 );
                 self.gui_state.paginate()?;
             }
+            KeyCode::Char('d') | KeyCode::Char('D') => {
+                if key_event.modifiers.contains(KeyModifiers::CONTROL) {
+                    self.gui_state.delete_selected_snip()?;
+                }
+            }
             KeyCode::Char(c) => {
                 self.gui_state.append_query(c)?;
             }
@@ -86,8 +91,11 @@ where
                 self.gui_state.pop_query()?;
             }
             KeyCode::Enter => {
-                if let Some(data) = self.gui_state.list_state.selected_snip_value() {
-                    let _ = cli_clipboard::set_contents(data);
+                if let Some(snip) = self
+                    .gui_state
+                    .get_selected_snip_and_increment_access_count()?
+                {
+                    let _ = cli_clipboard::set_contents(snip.value.clone());
                 }
                 self.should_quit = true;
             }

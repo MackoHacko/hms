@@ -45,19 +45,40 @@ where
         &self.query
     }
 
+    pub fn paginate(&mut self) -> Result<()> {
+        if self.list_state.needs_next_page() {
+            let offset = self.list_state.selected_snip_index() + 1;
+            let next = self.get_snips(offset as i64)?;
+            self.list_state.extend_snips(next);
+        }
+        Ok(())
+    }
+
+    pub fn get_selected_snip_and_increment_access_count(&mut self) -> Result<Option<&Snip>> {
+        if let Some(snip) = self.list_state.selected_snip() {
+            self.db_manager
+                .with_db(|db| db.increment_snip_access_count(&snip))?;
+            Ok(Some(snip))
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub fn delete_selected_snip(&mut self) -> Result<()> {
+        if let Some(snip) = self.list_state.selected_snip() {
+            self.db_manager.with_db(|db| db.delete_snip(snip))?;
+            self.list_state.remove_selected_snip();
+            Ok(())
+        } else {
+            Ok(())
+        }
+    }
+
     fn get_snips(&mut self, offset: i64) -> Result<Vec<Snip>> {
         let snips = self
             .db_manager
             .with_db(|db| db.find_snips_by_alias(&self.query, self.snip_limit, offset))?;
         Ok(snips)
-    }
-
-    pub fn paginate(&mut self) -> Result<()> {
-        if self.list_state.needs_next_page() {
-            let next = self.get_snips(self.list_state.selected_snip_index() as i64)?;
-            self.list_state.extend_snips(next);
-        }
-        Ok(())
     }
 
     fn refresh_snips(&mut self) -> Result<()> {

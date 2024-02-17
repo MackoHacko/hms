@@ -1,8 +1,8 @@
 use crate::schema::snips;
 use chrono::NaiveDateTime;
-use diesel::{Insertable, Queryable, Selectable};
+use diesel::{Identifiable, Insertable, Queryable, Selectable};
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Identifiable, Selectable, Debug)]
 #[diesel(table_name = snips)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Snip {

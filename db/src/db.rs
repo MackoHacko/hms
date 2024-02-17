@@ -3,7 +3,8 @@ use crate::{
     prelude::*,
     schema::snips::dsl::*,
 };
-use diesel::{insert_into, prelude::*};
+use chrono::Utc;
+use diesel::{delete, insert_into, prelude::*, update};
 
 pub struct HmsDb<'a> {
     pub conn: &'a mut SqliteConnection,
@@ -37,5 +38,18 @@ impl<'a> HmsDb<'a> {
             .offset(offset)
             .load::<Snip>(self.conn)
             .map_err(From::from)
+    }
+
+    pub fn increment_snip_access_count(&mut self, snip: &Snip) -> Result<()> {
+        let now = Utc::now().naive_utc();
+        update(snip)
+            .set((access_count.eq(access_count + 1), last_access.eq(now)))
+            .execute(self.conn)?;
+        Ok(())
+    }
+
+    pub fn delete_snip(&mut self, snip: &Snip) -> Result<()> {
+        delete(snip).execute(self.conn)?;
+        Ok(())
     }
 }

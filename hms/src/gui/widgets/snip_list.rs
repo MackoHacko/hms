@@ -56,6 +56,11 @@ impl SnipListState {
     pub fn needs_next_page(&mut self) -> bool {
         self.selected >= self.snips.len().saturating_sub(1)
     }
+
+    pub fn remove_selected_snip(&mut self) {
+        self.snips.remove(self.selected);
+        self.select(self.selected - 1);
+    }
 }
 
 struct DrawState<'a> {
@@ -119,7 +124,7 @@ impl StatefulWidget for SnipList {
 
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
         let block = Block::default()
-            .borders(Borders::LEFT | Borders::BOTTOM)
+            .borders(Borders::ALL)
             .border_style(Style::new().dark_gray().dim())
             .border_type(ratatui::widgets::BorderType::Rounded);
 
