@@ -78,3 +78,23 @@ fn test_rollback_on_query_error() {
 
     assert!(existing.is_empty(), "Rollback did not occur as expected");
 }
+
+#[test]
+fn test_increment_access_count() {
+    let (_temp_dir, app_dir_client) = test_app_dir_client();
+    let manager = get_test_manager(&app_dir_client);
+    let new_snip = NewSnip::new("alias", "value");
+
+    let snip = manager.with_db(|db| db.insert_snip(&new_snip)).unwrap();
+
+    assert_eq!(0, snip.access_count);
+
+    let updated_snip = manager
+        .with_db(|db| {
+            db.increment_snip_access_count(&snip).unwrap();
+            db.find_snip_by_id(snip.id)
+        })
+        .unwrap();
+
+    assert_eq!(1, updated_snip.access_count);
+}
