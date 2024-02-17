@@ -64,6 +64,16 @@ where
         }
     }
 
+    pub fn delete_selected_snip(&mut self) -> Result<()> {
+        if let Some(snip) = self.list_state.selected_snip() {
+            self.db_manager.with_db(|db| db.delete_snip(snip))?;
+            self.list_state.remove_selected_snip();
+            Ok(())
+        } else {
+            Ok(())
+        }
+    }
+
     fn get_snips(&mut self, offset: i64) -> Result<Vec<Snip>> {
         let snips = self
             .db_manager

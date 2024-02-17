@@ -4,7 +4,7 @@ use crate::{
     schema::snips::dsl::*,
 };
 use chrono::Utc;
-use diesel::{insert_into, prelude::*, update};
+use diesel::{delete, insert_into, prelude::*, update};
 
 pub struct HmsDb<'a> {
     pub conn: &'a mut SqliteConnection,
@@ -45,6 +45,11 @@ impl<'a> HmsDb<'a> {
         update(snip)
             .set((access_count.eq(access_count + 1), last_access.eq(now)))
             .execute(self.conn)?;
+        Ok(())
+    }
+
+    pub fn delete_snip(&mut self, snip: &Snip) -> Result<()> {
+        delete(snip).execute(self.conn)?;
         Ok(())
     }
 }

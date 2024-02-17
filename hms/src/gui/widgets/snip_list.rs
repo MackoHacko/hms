@@ -56,6 +56,11 @@ impl SnipListState {
     pub fn needs_next_page(&mut self) -> bool {
         self.selected >= self.snips.len().saturating_sub(1)
     }
+
+    pub fn remove_selected_snip(&mut self) {
+        self.snips.remove(self.selected);
+        self.select(self.selected - 1);
+    }
 }
 
 struct DrawState<'a> {

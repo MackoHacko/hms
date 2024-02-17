@@ -79,6 +79,11 @@ where
                 );
                 self.gui_state.paginate()?;
             }
+            KeyCode::Char('d') | KeyCode::Char('D') => {
+                if key_event.modifiers.contains(KeyModifiers::CONTROL) {
+                    self.gui_state.delete_selected_snip()?;
+                }
+            }
             KeyCode::Char(c) => {
                 self.gui_state.append_query(c)?;
             }
