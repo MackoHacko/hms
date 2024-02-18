@@ -1,8 +1,11 @@
 use ratatui::{
     buffer::Buffer,
-    layout::Rect,
+    layout::{Alignment, Rect},
     style::{Color, Style},
-    widgets::{Block, BorderType, Borders, Widget},
+    widgets::{
+        block::{Position, Title},
+        Block, BorderType, Borders, Widget,
+    },
 };
 
 #[derive(Debug, Default)]
@@ -18,9 +21,14 @@ impl SnipValue {
 
 impl Widget for SnipValue {
     fn render(self, area: Rect, buf: &mut Buffer) {
+        let title = Title::from("Delete: ctrl+d")
+            .alignment(Alignment::Right)
+            .position(Position::Bottom);
         let code_block = Block::default()
-            .borders(Borders::all())
+            .title(title)
+            .borders(Borders::ALL)
             .border_type(BorderType::Rounded);
+
         let inner_area = code_block.inner(area);
         code_block.render(area, buf);
 
