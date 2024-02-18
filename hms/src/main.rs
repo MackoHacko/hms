@@ -17,6 +17,7 @@ use std::{
 
 mod cli;
 mod gui;
+mod term;
 
 fn main() {
     setup_panic!();

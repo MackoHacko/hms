@@ -1,9 +1,11 @@
 use super::utils::create_layout;
-use crate::gui::{
-    gui_state::GuiState,
+use crate::{
+    gui::{
+        gui_state::GuiState,
+        traits::GuiDisplay,
+        widgets::{GradientText, RgbColor, SearchBar, SnipList, SnipValue},
+    },
     term::Term,
-    traits::GuiDisplay,
-    widgets::{GradientText, RgbColor, SearchBar, SnipList, SnipValue},
 };
 use anyhow::{Ok, Result};
 use hms_common::app_dir_client::AppDirClient;

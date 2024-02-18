@@ -1,4 +1,5 @@
-use super::{gui_state::GuiState, term::Term, traits::GuiDisplay};
+use super::{gui_state::GuiState, traits::GuiDisplay};
+use crate::term::Term;
 use anyhow::{Ok, Result};
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use hms_common::app_dir_client::AppDirClient;
