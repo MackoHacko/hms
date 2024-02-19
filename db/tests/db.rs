@@ -98,3 +98,31 @@ fn test_increment_access_count() {
 
     assert_eq!(1, updated_snip.access_count);
 }
+
+#[test]
+fn test_most_accessed_snips() {
+    let (_temp_dir, app_dir_client) = test_app_dir_client();
+    let manager = get_test_manager(&app_dir_client);
+
+    let never_accessed_snip = NewSnip::new("never", "value");
+    let least_accessed_snip = NewSnip::new("least", "value");
+    let most_accessed_snip = NewSnip::new("most", "value");
+
+    manager
+        .with_db(|db| {
+            db.insert_snip(&never_accessed_snip).unwrap();
+            let least_accessed = db.insert_snip(&least_accessed_snip).unwrap();
+            let most_accessed = db.insert_snip(&most_accessed_snip).unwrap();
+            db.increment_snip_access_count(&least_accessed).unwrap();
+            db.increment_snip_access_count(&most_accessed).unwrap();
+            db.increment_snip_access_count(&most_accessed)
+        })
+        .unwrap();
+
+    let top_list = manager
+        .with_db(|db| db.fetch_top_snips_by_access(10))
+        .unwrap();
+
+    assert_eq!(2, top_list.len());
+    assert_eq!("most", top_list[0].alias);
+}

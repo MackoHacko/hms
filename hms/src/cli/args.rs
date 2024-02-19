@@ -1,5 +1,5 @@
 use super::display_mode::DisplayMode;
-use clap::{Parser, Subcommand};
+use clap::{command, Args as ClapArgs, Parser, Subcommand};
 
 #[derive(Debug, Parser)]
 #[command(
@@ -36,4 +36,18 @@ pub enum Command {
         #[arg(short, long, help = "Alias for the snip being added")]
         alias: String,
     },
+    /// Snip stats
+    Stats(StatsArgs),
+}
+
+#[derive(Debug, ClapArgs)]
+pub struct StatsArgs {
+    #[command(subcommand)]
+    pub command: StatsCommand,
+}
+
+#[derive(Debug, Subcommand)]
+pub enum StatsCommand {
+    /// Display barchart for top ten most accessed snips, only considers snips accessed at least once
+    TopTen,
 }
