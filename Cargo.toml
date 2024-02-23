@@ -4,9 +4,9 @@ resolver = "2"
 
 [workspace.package]
 authors = ["marcus.lindstrom1@gmail.com"]
+description = "Command line utility to help with storing text (eg. code snips)"
 edition = "2021"
 version = "0.1.0"
-description = "Command line utility to help with storing text (eg. code snips)"
 
 [workspace.dependencies]
 anyhow = "1.0.79"
@@ -15,6 +15,7 @@ chrono = "0.4.31"
 clap = { version = "4.4.12", features = ["cargo", "derive"] }
 cli-clipboard = "0.4.0"
 crossterm = "0.27.0"
+csv = "1.3.0"
 dialoguer = "0.11.0"
 diesel = { version = "2.1.4", features = [
     "chrono",
@@ -23,8 +24,8 @@ diesel = { version = "2.1.4", features = [
 ] }
 diesel_migrations = "2.1.0"
 dirs = "5.0.1"
-ratatui = "0.26.0"
 human-panic = "1.2.3"
+ratatui = "0.26.0"
 serde = { version = "1.0.193", features = ["derive"] }
 tempfile = "3.8.1"
 test-case = "3.3.1"

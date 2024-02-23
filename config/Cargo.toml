@@ -13,5 +13,5 @@ toml.workspace = true
 hms-common.workspace = true
 
 [dev-dependencies]
-tempfile.workspace = true
 hms-test_utils.workspace = true
+tempfile.workspace = true
