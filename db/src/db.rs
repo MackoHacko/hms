@@ -52,4 +52,13 @@ impl<'a> HmsDb<'a> {
         delete(snip).execute(self.conn)?;
         Ok(())
     }
+
+    pub fn fetch_top_snips_by_access(&mut self, limit: i64) -> Result<Vec<Snip>> {
+        snips
+            .limit(limit)
+            .filter(access_count.gt(0))
+            .order(access_count.desc())
+            .load::<Snip>(self.conn)
+            .map_err(From::from)
+    }
 }

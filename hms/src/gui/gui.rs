@@ -1,4 +1,5 @@
-use super::{gui_state::GuiState, term::Term, traits::GuiDisplay};
+use super::{gui_state::GuiState, traits::GuiDisplay};
+use crate::term::Term;
 use anyhow::{Ok, Result};
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use hms_common::app_dir_client::AppDirClient;
@@ -79,10 +80,11 @@ where
                 );
                 self.gui_state.paginate()?;
             }
-            KeyCode::Char('d') | KeyCode::Char('D') => {
-                if key_event.modifiers.contains(KeyModifiers::CONTROL) {
-                    self.gui_state.delete_selected_snip()?;
-                }
+            KeyCode::Char(c)
+                if key_event.modifiers.contains(KeyModifiers::CONTROL)
+                    && vec!['d', 'D'].contains(&c) =>
+            {
+                self.gui_state.delete_selected_snip()?;
             }
             KeyCode::Char(c) => {
                 self.gui_state.append_query(c)?;

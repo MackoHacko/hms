@@ -1,4 +1,7 @@
-use crate::cli::Command;
+use crate::{
+    cli::{Command, StatsCommand},
+    stats::Stats,
+};
 use anyhow::{Ok, Result};
 use clap::Parser;
 use cli::{Args, DisplayMode};
@@ -17,6 +20,8 @@ use std::{
 
 mod cli;
 mod gui;
+mod stats;
+mod term;
 
 fn main() {
     setup_panic!();
@@ -33,6 +38,17 @@ fn main() {
                 eprintln!("Failed to add snip:\n{}", e);
                 std::process::exit(1);
             });
+        }
+        Some(Command::Stats(stats_args)) => {
+            let app_dir_client = DefaultAppDirClient;
+            let db_manager = HmsDbManager::new(&app_dir_client);
+            match stats_args.command {
+                StatsCommand::TopTen => Stats::access_count_top_list(&db_manager, 10)
+                    .unwrap_or_else(|e| {
+                        eprintln!("Failed to run Stats:\n{}", e);
+                        std::process::exit(1);
+                    }),
+            }
         }
         None => {
             match args.display_mode {
