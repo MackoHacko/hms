@@ -1,15 +1,14 @@
 use crate::{
-    cli::{Command, ImportCommand, StatsCommand},
+    cli::{Args, Command, DisplayMode, ImportCommand, StatsCommand},
+    gui::{
+        displays::{LargeDisplay, SmallDisplay},
+        Gui,
+    },
     import::csv::SnipCsv,
     stats::Stats,
 };
-use anyhow::{Ok, Result};
+use anyhow::Result;
 use clap::Parser;
-use cli::{Args, DisplayMode};
-use gui::{
-    displays::{LargeDisplay, SmallDisplay},
-    Gui, GuiDisplay,
-};
 use hms_common::app_dir_client::{AppDirClient, DefaultAppDirClient};
 use hms_config::manager::HmsConfigManager;
 use hms_db::{manager::HmsDbManager, models::NewSnip};
@@ -26,98 +25,50 @@ mod import;
 mod stats;
 mod term;
 
-fn main() {
+fn main() -> Result<()> {
     setup_panic!();
-    if let Err(e) = prepare_environment() {
-        eprintln!("Failed to prepare the application environment:\n{}", e);
-        std::process::exit(1);
-    }
+    let app_dir_client = DefaultAppDirClient;
+    let db_manager = HmsDbManager::new(&app_dir_client);
+    let cfg_manager = HmsConfigManager::new(&app_dir_client);
+
+    prepare_environment(&app_dir_client, &db_manager, &cfg_manager)?;
 
     let args = Args::parse();
-
     match args.command {
-        Some(Command::Add { snip, alias }) => {
-            add_snip(snip, alias).unwrap_or_else(|e| {
-                eprintln!("Failed to add snip:\n{}", e);
-                std::process::exit(1);
-            });
-        }
+        Some(Command::Add { snip, alias }) => add_snip(&db_manager, snip, alias)?,
         Some(Command::Import(import_args)) => match import_args.command {
-            ImportCommand::Csv { file } => insert_from_csv(file).unwrap_or_else(|e| {
-                eprintln!("Failed to import csv:\n{}", e);
-                std::process::exit(1);
-            }),
+            ImportCommand::Csv { file } => insert_from_csv(&db_manager, file)?,
         },
-        Some(Command::Stats(stats_args)) => {
-            let app_dir_client = DefaultAppDirClient;
-            let db_manager = HmsDbManager::new(&app_dir_client);
-            match stats_args.command {
-                StatsCommand::TopTen => Stats::access_count_top_list(&db_manager, 10)
-                    .unwrap_or_else(|e| {
-                        eprintln!("Failed to run Stats:\n{}", e);
-                        std::process::exit(1);
-                    }),
-            }
-        }
-        None => {
-            match args.display_mode {
-                DisplayMode::Small => run_gui::<SmallDisplay>(),
-                DisplayMode::Large => run_gui::<LargeDisplay>(),
-            }
-            .unwrap_or_else(|e| {
-                eprintln!("Failed to run GUI:\n{}", e);
-                std::process::exit(1);
-            });
-        }
+        Some(Command::Stats(stats_args)) => match stats_args.command {
+            StatsCommand::TopTen => Stats::access_count_top_list(&db_manager, 10)?,
+        },
+        None => run_gui(&db_manager, &cfg_manager, args.display_mode)?,
     }
+
+    Ok(())
 }
 
-fn prepare_environment() -> Result<()> {
-    let app_dir_client = DefaultAppDirClient;
+fn prepare_environment<A: AppDirClient>(
+    app_dir_client: &A,
+    db_manager: &HmsDbManager<A>,
+    cfg_manager: &HmsConfigManager<A>,
+) -> Result<()> {
     let app_dir_path = app_dir_client.get_app_dir_path()?;
-
     if !app_dir_path.exists() {
-        println!("Looks like this is your first time running Hold my Snip!");
         println!(
             "Creating application directory at {}",
             app_dir_path.display()
         );
         fs::create_dir_all(&app_dir_path)?;
     }
-
-    initialize(&app_dir_client)?;
-
+    initialize(db_manager, cfg_manager)?;
     Ok(())
 }
 
-fn add_snip(snip: Option<String>, alias: String) -> Result<()> {
-    let snip_content = match snip {
-        Some(content) => content,
-        None => {
-            if io::stdin().is_terminal() {
-                eprintln!("Error: No snip provided, please provide a one.");
-                std::process::exit(1);
-            } else {
-                let mut buffer = String::new();
-                io::stdin()
-                    .read_to_string(&mut buffer)
-                    .expect("Failed to read from stdin");
-                buffer.trim().to_string()
-            }
-        }
-    };
-
-    let new_snip = NewSnip::new(&alias, &snip_content);
-    let app_dir_client = DefaultAppDirClient;
-    let db_manager = HmsDbManager::new(&app_dir_client);
-    db_manager.with_db(|db| db.insert_snip(&new_snip))?;
-    Ok(())
-}
-
-fn initialize(app_dir_client: &DefaultAppDirClient) -> Result<()> {
-    let db_manager = HmsDbManager::new(app_dir_client);
-    let cfg_manager = HmsConfigManager::new(app_dir_client);
-
+fn initialize<A: AppDirClient>(
+    db_manager: &HmsDbManager<A>,
+    cfg_manager: &HmsConfigManager<A>,
+) -> Result<()> {
     if !cfg_manager.config_exists()? {
         let cfg = cfg_manager.wizard()?;
         println!("Storing configuration...");
@@ -132,20 +83,49 @@ fn initialize(app_dir_client: &DefaultAppDirClient) -> Result<()> {
     Ok(())
 }
 
-fn run_gui<D: GuiDisplay<DefaultAppDirClient>>() -> Result<()> {
-    let app_dir_client = DefaultAppDirClient;
-    let db_manager = HmsDbManager::new(&app_dir_client);
-    let cfg_manager = HmsConfigManager::new(&app_dir_client);
-    let cfg = cfg_manager.load_config()?;
-    Gui::<D, DefaultAppDirClient>::run(&db_manager, cfg)
+fn add_snip<A: AppDirClient>(
+    db_manager: &HmsDbManager<A>,
+    snip: Option<String>,
+    alias: String,
+) -> Result<()> {
+    let snip_content = snip
+        .or_else(|| {
+            if io::stdin().is_terminal() {
+                eprintln!("Error: No snip provided, please provide a one.");
+                std::process::exit(1);
+            } else {
+                let mut buffer = String::new();
+                io::stdin()
+                    .read_to_string(&mut buffer)
+                    .expect("Failed to read from stdin");
+                Some(buffer.trim().to_string())
+            }
+        })
+        .unwrap();
+
+    let new_snip = NewSnip::new(&alias, &snip_content);
+    db_manager.with_db(|db| db.insert_snip(&new_snip))?;
+    Ok(())
 }
 
-fn insert_from_csv(csv_file: PathBuf) -> Result<()> {
-    let app_dir_client = DefaultAppDirClient;
-    let db_manager = HmsDbManager::new(&app_dir_client);
-
+fn insert_from_csv(
+    db_manager: &HmsDbManager<DefaultAppDirClient>,
+    csv_file: PathBuf,
+) -> Result<()> {
     let csv = SnipCsv::from_file(csv_file)?;
     let new_snips = csv.to_new_snips();
     db_manager.with_db(|db| db.insert_snips(&new_snips))?;
     Ok(())
+}
+
+fn run_gui<A: AppDirClient>(
+    db_manager: &HmsDbManager<A>,
+    cfg_manager: &HmsConfigManager<A>,
+    display_mode: DisplayMode,
+) -> Result<()> {
+    let cfg = cfg_manager.load_config()?;
+    match display_mode {
+        DisplayMode::Small => Gui::<SmallDisplay, _>::run(db_manager, cfg),
+        DisplayMode::Large => Gui::<LargeDisplay, _>::run(db_manager, cfg),
+    }
 }
