@@ -1,5 +1,6 @@
 use crate::{
-    cli::{Command, StatsCommand},
+    cli::{Command, ImportCommand, StatsCommand},
+    import::csv::SnipCsv,
     stats::Stats,
 };
 use anyhow::{Ok, Result};
@@ -16,10 +17,12 @@ use human_panic::setup_panic;
 use std::{
     fs,
     io::{self, IsTerminal, Read},
+    path::PathBuf,
 };
 
 mod cli;
 mod gui;
+mod import;
 mod stats;
 mod term;
 
@@ -39,6 +42,12 @@ fn main() {
                 std::process::exit(1);
             });
         }
+        Some(Command::Import(import_args)) => match import_args.command {
+            ImportCommand::Csv { file } => insert_from_csv(file).unwrap_or_else(|e| {
+                eprintln!("Failed to import csv:\n{}", e);
+                std::process::exit(1);
+            }),
+        },
         Some(Command::Stats(stats_args)) => {
             let app_dir_client = DefaultAppDirClient;
             let db_manager = HmsDbManager::new(&app_dir_client);
@@ -129,4 +138,14 @@ fn run_gui<D: GuiDisplay<DefaultAppDirClient>>() -> Result<()> {
     let cfg_manager = HmsConfigManager::new(&app_dir_client);
     let cfg = cfg_manager.load_config()?;
     Gui::<D, DefaultAppDirClient>::run(&db_manager, cfg)
+}
+
+fn insert_from_csv(csv_file: PathBuf) -> Result<()> {
+    let app_dir_client = DefaultAppDirClient;
+    let db_manager = HmsDbManager::new(&app_dir_client);
+
+    let csv = SnipCsv::from_file(csv_file)?;
+    let new_snips = csv.to_new_snips();
+    db_manager.with_db(|db| db.insert_snips(&new_snips))?;
+    Ok(())
 }

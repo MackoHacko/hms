@@ -4,7 +4,12 @@ use crate::{
     schema::snips::dsl::*,
 };
 use chrono::Utc;
-use diesel::{delete, insert_into, prelude::*, update};
+use diesel::{
+    delete, insert_into,
+    prelude::*,
+    result::{DatabaseErrorKind, Error as DieselError},
+    update,
+};
 
 pub struct HmsDb<'a> {
     pub conn: &'a mut SqliteConnection,
@@ -16,7 +21,25 @@ impl<'a> HmsDb<'a> {
             .values(new_snip)
             .returning(Snip::as_returning())
             .get_result(self.conn)
-            .map_err(From::from)
+            .map_err(|e| match e {
+                DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {
+                    HmsDbError::AliasConstraintError
+                }
+                other => HmsDbError::from(other),
+            })
+    }
+
+    pub fn insert_snips(&mut self, new_snips: &Vec<NewSnip>) -> Result<()> {
+        insert_into(snips)
+            .values(new_snips)
+            .execute(self.conn)
+            .map(|_| ())
+            .map_err(|e| match e {
+                DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {
+                    HmsDbError::AliasConstraintError
+                }
+                other => HmsDbError::from(other),
+            })
     }
 
     pub fn find_snip_by_id(&mut self, snip_id: i32) -> Result<Snip> {
