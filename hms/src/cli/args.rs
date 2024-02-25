@@ -1,5 +1,6 @@
 use super::display_mode::DisplayMode;
 use clap::{command, Args as ClapArgs, Parser, Subcommand};
+use std::path::PathBuf;
 
 #[derive(Debug, Parser)]
 #[command(
@@ -36,8 +37,25 @@ pub enum Command {
         #[arg(short, long, help = "Alias for the snip being added")]
         alias: String,
     },
+    /// Import snips
+    Import(ImportArgs),
     /// Snip stats
     Stats(StatsArgs),
+}
+
+#[derive(Debug, ClapArgs)]
+pub struct ImportArgs {
+    #[command(subcommand)]
+    pub command: ImportCommand,
+}
+
+#[derive(Debug, Subcommand)]
+pub enum ImportCommand {
+    /// Import snips from csv file
+    Csv {
+        #[arg(short, long, help = "Path to csv file")]
+        file: PathBuf,
+    },
 }
 
 #[derive(Debug, ClapArgs)]

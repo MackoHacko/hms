@@ -21,6 +21,24 @@ fn test_insert_snip() {
     assert_eq!(0, snip.access_count);
 }
 
+#[test]
+fn test_insert_snips() {
+    let (_temp_dir, app_dir_client) = test_app_dir_client();
+    let manager = get_test_manager(&app_dir_client);
+    let new_snips = vec![
+        NewSnip::new("alias1", "value"),
+        NewSnip::new("alias2", "value"),
+    ];
+
+    manager.with_db(|db| db.insert_snips(&new_snips)).unwrap();
+
+    let snips = manager
+        .with_db(|db| db.find_snips_by_alias(&"alias", 100, 0))
+        .unwrap();
+
+    assert_eq!(2, snips.len());
+}
+
 #[test_case("pickle")]
 #[test_case("portal")]
 #[test_case("schwifty")]
@@ -56,7 +74,7 @@ fn test_alias_length_constraint() {
 }
 
 #[test]
-fn test_rollback_on_query_error() {
+fn test_rollback_on_constraint_error() {
     let (_temp_dir, app_dir_client) = test_app_dir_client();
     let manager = get_test_manager(&app_dir_client);
     let new_snip = NewSnip::new("alias", "value");
@@ -66,7 +84,7 @@ fn test_rollback_on_query_error() {
         db.insert_snip(&new_snip) // Intentional error (duplicate alias)
     });
 
-    if let Err(HmsDbError::QueryError(_)) = result {
+    if let Err(HmsDbError::AliasConstraintError) = result {
         // Correct error type, do nothing
     } else {
         panic!("Expected QueryError, got {:?}", result);
