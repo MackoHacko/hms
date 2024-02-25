@@ -9,7 +9,6 @@ where
     P: AppDirClient,
 {
     db_manager: &'a HmsDbManager<'a, P>,
-    snip_limit: i64,
     query: String,
     pub list_state: SnipListState,
 }
@@ -18,14 +17,12 @@ impl<'a, P> GuiState<'a, P>
 where
     P: AppDirClient,
 {
-    pub fn new(db_manager: &'a HmsDbManager<'a, P>, snip_limit: i64) -> Result<Self> {
+    pub fn new(db_manager: &'a HmsDbManager<'a, P>) -> Result<Self> {
         let query = String::default();
-        let snips =
-            db_manager.with_db(|db| db.find_snips_by_alias(query.as_str(), snip_limit, 0))?;
+        let snips = db_manager.with_db(|db| db.find_snips_by_alias(query.as_str(), 100, 0))?;
         let list_state = SnipListState::new(snips);
         Ok(Self {
             db_manager,
-            snip_limit,
             query: query,
             list_state,
         })
@@ -77,7 +74,7 @@ where
     fn get_snips(&mut self, offset: i64) -> Result<Vec<Snip>> {
         let snips = self
             .db_manager
-            .with_db(|db| db.find_snips_by_alias(&self.query, self.snip_limit, offset))?;
+            .with_db(|db| db.find_snips_by_alias(&self.query, 100, offset))?;
         Ok(snips)
     }
 

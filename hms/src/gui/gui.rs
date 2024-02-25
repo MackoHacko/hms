@@ -3,7 +3,6 @@ use crate::term::Term;
 use anyhow::{Ok, Result};
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use hms_common::app_dir_client::AppDirClient;
-use hms_config::models::HmsConfig;
 use hms_db::manager::HmsDbManager;
 use std::time::Duration;
 
@@ -23,17 +22,17 @@ where
     D: GuiDisplay<P>,
     P: AppDirClient,
 {
-    fn new(db_manager: &'a HmsDbManager<'a, P>, cfg: HmsConfig) -> Result<Self> {
+    fn new(db_manager: &'a HmsDbManager<'a, P>) -> Result<Self> {
         Ok(Self {
-            gui_state: GuiState::new(db_manager, cfg.snip_limit)?,
+            gui_state: GuiState::new(db_manager)?,
             display: D::new()?,
             should_quit: false,
         })
     }
 
-    pub fn run(db_manager: &'a HmsDbManager<'a, P>, cfg: HmsConfig) -> Result<()> {
+    pub fn run(db_manager: &'a HmsDbManager<'a, P>) -> Result<()> {
         install_panic_hook();
-        let mut gui = Self::new(db_manager, cfg)?;
+        let mut gui = Self::new(db_manager)?;
 
         while !gui.should_quit {
             gui.display.update(&mut gui.gui_state)?;

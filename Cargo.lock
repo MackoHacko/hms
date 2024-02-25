@@ -571,8 +571,8 @@ dependencies = [
  "cli-clipboard",
  "crossterm",
  "csv",
+ "dialoguer",
  "hms-common",
- "hms-config",
  "hms-db",
  "human-panic",
  "ratatui",
@@ -584,19 +584,6 @@ name = "hms-common"
 version = "0.1.0"
 dependencies = [
  "dirs",
-]
-
-[[package]]
-name = "hms-config"
-version = "0.1.0"
-dependencies = [
- "dialoguer",
- "hms-common",
- "hms-test_utils",
- "serde",
- "tempfile",
- "thiserror",
- "toml 0.8.8",
 ]
 
 [[package]]
@@ -1378,7 +1365,6 @@ dependencies = [
  "serde",
  "serde_spanned",
  "toml_datetime",
- "winnow",
 ]
 
 [[package]]

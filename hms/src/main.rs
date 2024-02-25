@@ -7,10 +7,10 @@ use crate::{
     import::csv::SnipCsv,
     stats::Stats,
 };
-use anyhow::Result;
+use anyhow::{Ok, Result};
 use clap::Parser;
+use dialoguer::{theme::ColorfulTheme, Confirm};
 use hms_common::app_dir_client::{AppDirClient, DefaultAppDirClient};
-use hms_config::manager::HmsConfigManager;
 use hms_db::{manager::HmsDbManager, models::NewSnip};
 use human_panic::setup_panic;
 use std::{
@@ -29,9 +29,8 @@ fn main() -> Result<()> {
     setup_panic!();
     let app_dir_client = DefaultAppDirClient;
     let db_manager = HmsDbManager::new(&app_dir_client);
-    let cfg_manager = HmsConfigManager::new(&app_dir_client);
 
-    prepare_environment(&app_dir_client, &db_manager, &cfg_manager)?;
+    prepare_environment(&app_dir_client, &db_manager)?;
 
     let args = Args::parse();
     match args.command {
@@ -42,7 +41,7 @@ fn main() -> Result<()> {
         Some(Command::Stats(stats_args)) => match stats_args.command {
             StatsCommand::TopTen => Stats::access_count_top_list(&db_manager, 10)?,
         },
-        None => run_gui(&db_manager, &cfg_manager, args.display_mode)?,
+        None => run_gui(&db_manager, args.display_mode)?,
     }
 
     Ok(())
@@ -51,33 +50,26 @@ fn main() -> Result<()> {
 fn prepare_environment<A: AppDirClient>(
     app_dir_client: &A,
     db_manager: &HmsDbManager<A>,
-    cfg_manager: &HmsConfigManager<A>,
 ) -> Result<()> {
     let app_dir_path = app_dir_client.get_app_dir_path()?;
     if !app_dir_path.exists() {
+        println!("Looks like this is your first time running Hold my Snip! 🎉");
+        let proceed: bool = Confirm::with_theme(&ColorfulTheme::default())
+            .with_prompt("Set up required .hold_my_snip directory in home folder?")
+            .interact()?;
+        if !proceed {
+            println!("That's too bad, exiting...");
+            std::process::exit(0);
+        }
+        fs::create_dir_all(&app_dir_path)?;
         println!(
-            "Creating application directory at {}",
+            "✅ Created application directory at {}",
             app_dir_path.display()
         );
-        fs::create_dir_all(&app_dir_path)?;
     }
-    initialize(db_manager, cfg_manager)?;
-    Ok(())
-}
-
-fn initialize<A: AppDirClient>(
-    db_manager: &HmsDbManager<A>,
-    cfg_manager: &HmsConfigManager<A>,
-) -> Result<()> {
-    if !cfg_manager.config_exists()? {
-        let cfg = cfg_manager.wizard()?;
-        println!("Storing configuration...");
-        cfg_manager.save_config(&cfg)?;
-    }
-
     if db_manager.db_has_pending_migrations()? {
-        println!("Database migrations are pending. Running migrations...");
         db_manager.run_pending_migrations()?;
+        println!("✅ Ran pending db migrations");
     }
 
     Ok(())
@@ -118,14 +110,9 @@ fn insert_from_csv(
     Ok(())
 }
 
-fn run_gui<A: AppDirClient>(
-    db_manager: &HmsDbManager<A>,
-    cfg_manager: &HmsConfigManager<A>,
-    display_mode: DisplayMode,
-) -> Result<()> {
-    let cfg = cfg_manager.load_config()?;
+fn run_gui<A: AppDirClient>(db_manager: &HmsDbManager<A>, display_mode: DisplayMode) -> Result<()> {
     match display_mode {
-        DisplayMode::Small => Gui::<SmallDisplay, _>::run(db_manager, cfg),
-        DisplayMode::Large => Gui::<LargeDisplay, _>::run(db_manager, cfg),
+        DisplayMode::Small => Gui::<SmallDisplay, _>::run(db_manager),
+        DisplayMode::Large => Gui::<LargeDisplay, _>::run(db_manager),
     }
 }

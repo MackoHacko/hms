@@ -1,5 +1,5 @@
 [workspace]
-members = ["common", "config", "db", "hms", "test_utils"]
+members = ["common", "db", "hms", "test_utils"]
 resolver = "2"
 
 [workspace.package]
@@ -30,10 +30,8 @@ serde = { version = "1.0.193", features = ["derive"] }
 tempfile = "3.8.1"
 test-case = "3.3.1"
 thiserror = "1.0.52"
-toml = "0.8.8"
 
 # Internal
 hms-common = { path = "common" }
-hms-config = { path = "config" }
 hms-db = { path = "db" }
 hms-test_utils = { path = "test_utils" }
