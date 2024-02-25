@@ -66,7 +66,7 @@ fn test_alias_length_constraint() {
 
     let result = manager.with_db(|db| db.insert_snip(&new_snip));
 
-    if let Err(HmsDbError::QueryError(_)) = result {
+    if let Err(HmsDbError::AliasConstraintError(_)) = result {
         // Correct error type, do nothing
     } else {
         panic!("Expected QueryError, got {:?}", result);
@@ -84,7 +84,7 @@ fn test_rollback_on_constraint_error() {
         db.insert_snip(&new_snip) // Intentional error (duplicate alias)
     });
 
-    if let Err(HmsDbError::AliasConstraintError) = result {
+    if let Err(HmsDbError::AliasConstraintError(_)) = result {
         // Correct error type, do nothing
     } else {
         panic!("Expected QueryError, got {:?}", result);
