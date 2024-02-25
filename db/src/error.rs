@@ -14,6 +14,6 @@ pub enum HmsDbError {
     #[error("Migration error: {0}")]
     MigrationError(String),
 
-    #[error("Duplicate alias exists")]
-    AliasConstraintError,
+    #[error("{0}")]
+    AliasConstraintError(String),
 }

@@ -23,7 +23,12 @@ impl<'a> HmsDb<'a> {
             .get_result(self.conn)
             .map_err(|e| match e {
                 DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {
-                    HmsDbError::AliasConstraintError
+                    HmsDbError::AliasConstraintError("Alias already in use.".to_string())
+                }
+                DieselError::DatabaseError(DatabaseErrorKind::CheckViolation, _) => {
+                    HmsDbError::AliasConstraintError(
+                        "Alias exceeds length limit (50 characters max).".to_string(),
+                    )
                 }
                 other => HmsDbError::from(other),
             })
@@ -36,7 +41,15 @@ impl<'a> HmsDb<'a> {
             .map(|_| ())
             .map_err(|e| match e {
                 DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {
-                    HmsDbError::AliasConstraintError
+                    HmsDbError::AliasConstraintError(
+                        "One or more aliases conflict with existing aliases.".to_string(),
+                    )
+                }
+                DieselError::DatabaseError(DatabaseErrorKind::CheckViolation, _) => {
+                    HmsDbError::AliasConstraintError(
+                        "One or more aliases exceed the length limit (50 characters max)."
+                            .to_string(),
+                    )
                 }
                 other => HmsDbError::from(other),
             })
