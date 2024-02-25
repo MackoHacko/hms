@@ -49,7 +49,7 @@ impl Stats {
         let num_items = data.len() as u16;
         let min_height_per_bar = 3;
         let chart_height = num_items * min_height_per_bar;
-        let adjusted_chart_height = min(chart_height, term_area.height);
+        let adjusted_chart_height = min(chart_height, term_area.height) - (num_items - 1);
 
         let cursor = term.get_cursor()?;
         let available_height = term_area.height.saturating_sub(cursor.1);
@@ -61,11 +61,14 @@ impl Stats {
             cursor.1
         };
 
-        let area = Rect::new(0, render_y, term_area.width, adjusted_chart_height);
+        let adjusted_chart_width = (term_area.width as f32 * 0.4) as u16;
+
+        let area = Rect::new(0, render_y, adjusted_chart_width, adjusted_chart_height);
 
         term.draw(|f| f.render_widget(barchart, area))?;
 
         Term::stop()?;
+        println!(); // Move cursor to next line to avoid no trailing new line
         Ok(())
     }
 }
