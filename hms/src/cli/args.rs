@@ -1,6 +1,20 @@
 use super::display_mode::DisplayMode;
-use clap::{command, Args as ClapArgs, Parser, Subcommand};
+use clap::{
+    builder::{
+        styling::{AnsiColor, Effects},
+        Styles,
+    },
+    command, Args as ClapArgs, Parser, Subcommand,
+};
 use std::path::PathBuf;
+
+fn styles() -> Styles {
+    Styles::styled()
+        .header(AnsiColor::Green.on_default() | Effects::UNDERLINE)
+        .usage(AnsiColor::Green.on_default())
+        .literal(AnsiColor::Blue.on_default() | Effects::BOLD)
+        .placeholder(AnsiColor::Magenta.on_default())
+}
 
 #[derive(Debug, Parser)]
 #[command(
@@ -8,6 +22,7 @@ use std::path::PathBuf;
     version = env!("HMS_GIT_INFO"),
     about = clap::crate_description!(),
     author = clap::crate_authors!(),
+    styles = styles(),
     help_template("\
 {before-help}{name}
 
