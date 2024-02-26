@@ -1,18 +1,22 @@
 [package]
-edition.workspace = true
-name = "hms-db"
-version = "0.1.0"
+authors.workspace    = true
+description          = "Db lib for Hold my Snip!"
+edition.workspace    = true
+licence.workspace    = true
+name                 = "hms-db"
+repository.workspace = true
+version              = "0.1.0"
 
 [dependencies]
-chrono.workspace = true
-diesel.workspace = true
+chrono.workspace            = true
+diesel.workspace            = true
 diesel_migrations.workspace = true
-thiserror.workspace = true
+thiserror.workspace         = true
 
 # Internal
 hms-common.workspace = true
 
 [dev-dependencies]
 hms-test_utils.workspace = true
-tempfile.workspace = true
-test-case.workspace = true
+tempfile.workspace       = true
+test-case.workspace      = true
