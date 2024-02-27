@@ -48,7 +48,6 @@ jobs:
         run: |
           echo "C:\ProgramData\chocolatey\lib\SQLite\tools" >> $GITHUB_PATH
           echo "SQLITE3_LIB_DIR=C:\ProgramData\chocolatey\lib\SQLite\tools" >> $GITHUB_ENV
-          echo "SQLITE_DATABASE_URL=C:\test.db" >> $GITHUB_ENV
 
       - name: Cache cargo registry
         uses: Swatinem/rust-cache@v2
@@ -62,7 +61,7 @@ jobs:
         run: cargo test --verbose
 
   publish:
-    if: github.event_name == 'release' && github.event.action == 'created'
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
