@@ -1,8 +1,12 @@
 [package]
-edition.workspace = true
-name = "hms-test_utils"
-version.workspace = true
+authors.workspace    = true
+description          = "Testing utils for Hold my Snip!"
+edition.workspace    = true
+license.workspace    = true
+name                 = "hms-test_utils"
+repository.workspace = true
+version.workspace    = true
 
 [dependencies]
 hms-common.workspace = true
-tempfile.workspace = true
+tempfile.workspace   = true
