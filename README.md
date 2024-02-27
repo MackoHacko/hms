@@ -11,6 +11,11 @@ Welcome to **Hold my Snip!**, a Rust-based CLI tool designed to enhance your dev
 - **🪣 Ingest:** Import snippets from csv
 - **📊 Dashboards:** Tracks your most used snippets and makes them viewable in a chart
 
+## Installation
+```bash
+cargo install hms
+```
+
 ## Usage
 
 ```bash
