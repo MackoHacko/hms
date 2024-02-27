@@ -2,7 +2,7 @@
 authors.workspace     = true
 description.workspace = true
 edition.workspace     = true
-licence.workspace     = true
+license.workspace     = true
 name                  = "hms"
 readme.workspace      = true
 repository.workspace  = true

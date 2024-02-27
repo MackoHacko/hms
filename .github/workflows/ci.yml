@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  pull_request:
+  release:
+    types: [published]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  formatting-build-test:
+    if: github.event_name == 'pull_request'
+    name: Format check, build and test (${{ matrix.os }})
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-2019]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: false
+          components: rustfmt
+
+      - name: Check formatting
+        run: cargo +nightly fmt -- --check -v
+
+      - name: Install sqlite (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          choco install sqlite
+          cd /D C:\ProgramData\chocolatey\lib\SQLite\tools
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          lib /machine:x64 /def:sqlite3.def /out:sqlite3.lib
+
+      - name: Set variables for sqlite (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          echo "C:\ProgramData\chocolatey\lib\SQLite\tools" >> $GITHUB_PATH
+          echo "SQLITE3_LIB_DIR=C:\ProgramData\chocolatey\lib\SQLite\tools" >> $GITHUB_ENV
+          echo "SQLITE_DATABASE_URL=C:\test.db" >> $GITHUB_ENV
+
+      - name: Cache cargo registry
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+
+      - name: Build
+        run: cargo build --verbose
+
+      - name: Run tests
+        run: cargo test --verbose
+
+  publish:
+    if: github.event_name == 'release' && github.event.action == 'created'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Publish to crates.io
+        uses: katyo/publish-crates@v2
+        with:
+          registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}

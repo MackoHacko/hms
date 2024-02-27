@@ -2,7 +2,7 @@
 authors.workspace    = true
 description          = "Common lib for Hold my Snip!"
 edition.workspace    = true
-licence.workspace    = true
+license.workspace    = true
 name                 = "hms-common"
 repository.workspace = true
 version              = "0.1.0"
