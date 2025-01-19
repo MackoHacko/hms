@@ -51,14 +51,14 @@ impl Stats {
         let chart_height = num_items * min_height_per_bar;
         let adjusted_chart_height = min(chart_height, term_area.height) - (num_items - 1);
 
-        let cursor = term.get_cursor()?;
-        let available_height = term_area.height.saturating_sub(cursor.1);
+        let cursor = term.get_cursor_position()?;
+        let available_height = term_area.height.saturating_sub(cursor.y);
         let render_y = if available_height < adjusted_chart_height {
             let scroll = adjusted_chart_height - available_height;
             Term::scroll_up(scroll)?;
-            cursor.1.saturating_sub(scroll)
+            cursor.y.saturating_sub(scroll)
         } else {
-            cursor.1
+            cursor.y
         };
 
         let adjusted_chart_width = (term_area.width as f32 * 0.4) as u16;
