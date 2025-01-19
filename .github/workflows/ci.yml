@@ -77,6 +77,11 @@ jobs:
           toolchain: stable
           override: true
 
+      - name: Install SQLite dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsqlite3-dev
+
       - name: Publish to crates.io
         uses: katyo/publish-crates@v2
         with:
