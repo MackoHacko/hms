@@ -55,12 +55,13 @@ where
         }
 
         match key_event.code {
-            KeyCode::Esc | KeyCode::Char('c') | KeyCode::Char('C') => {
-                if key_event.code == KeyCode::Esc
-                    || key_event.modifiers.contains(KeyModifiers::CONTROL)
-                {
-                    self.should_quit = true;
-                }
+            KeyCode::Esc => {
+                self.should_quit = true;
+            }
+            KeyCode::Char('c') | KeyCode::Char('C')
+                if key_event.modifiers.contains(KeyModifiers::CONTROL) =>
+            {
+                self.should_quit = true;
             }
             KeyCode::Up => {
                 self.gui_state.list_state.select(
